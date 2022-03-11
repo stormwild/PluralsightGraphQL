@@ -18,15 +18,18 @@ namespace CarvedRock.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-            services.AddDbContext<CarvedRockDbContext>(options =>
-                options.UseSqlServer(_config["ConnectionStrings:CarvedRock"]));
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddDbContext<CarvedRockDbContext>(options => {
+                options.UseSqlServer(_config["ConnectionStrings:CarvedRock"]);
+                options.EnableDetailedErrors();
+            });
             services.AddSingleton<ProductRepository>();
         }
 
         public void Configure(IApplicationBuilder app, CarvedRockDbContext dbContext)
         {
             app.UseMvc();
+            dbContext.Database.EnsureCreated();
             dbContext.Seed();
         }
     }
